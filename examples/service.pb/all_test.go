@@ -10,7 +10,7 @@ import (
 	"net/rpc"
 	"testing"
 
-	"github.com/chai2010/protorpc"
+	"github.com/cgrates/protobufc"
 )
 
 func init() {

@@ -12,8 +12,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/chai2010/protorpc"
-	msg "github.com/chai2010/protorpc/examples/message.pb"
+	"github.com/cgrates/protobufc"
+	msg "github.com/cgrates/protobufc/examples/message.pb"
 )
 
 type Arith int

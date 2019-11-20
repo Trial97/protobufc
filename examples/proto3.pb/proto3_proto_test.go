@@ -47,7 +47,7 @@ func TestEchoService(t *testing.T) {
 	defer c.Close()
 
 	in := Message{
-		Name:         "github.com/chai2010/protorpc",
+		Name:         "github.com/cgrates/protobufc",
 		Hilarity:     Message_PUNS,
 		HeightInCm:   13,
 		Data:         []byte("bin data"),

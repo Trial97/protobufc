@@ -5,7 +5,7 @@
 PROTO_FILES=$(sort $(wildcard ./*.proto))
 
 default: $(PROTO_FILES) Makefile
-	go install github.com/chai2010/protorpc/protoc-gen-stdrpc
+	go install github.com/cgrates/protobufc/protoc-gen-stdrpc
 	protoc --stdrpc_out=. ${PROTO_FILES}
 	go test
 

@@ -12,7 +12,7 @@ import (
 	"net/rpc"
 	"time"
 
-	stdrpc "github.com/chai2010/protorpc/examples/stdrpc.pb"
+	stdrpc "github.com/cgrates/protobufc/examples/stdrpc.pb"
 )
 
 type Echo int

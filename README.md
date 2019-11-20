@@ -10,26 +10,26 @@
 ```
 
 [![Build Status](https://travis-ci.org/chai2010/protorpc.svg)](https://travis-ci.org/chai2010/protorpc)
-[![GoDoc](https://godoc.org/github.com/chai2010/protorpc?status.svg)](https://godoc.org/github.com/chai2010/protorpc)
+[![GoDoc](https://godoc.org/github.com/cgrates/protobufc?status.svg)](https://godoc.org/github.com/cgrates/protobufc)
 
-- C++ Version(Proto2): [https://github.com/chai2010/protorpc.cxx](https://github.com/chai2010/protorpc.cxx)
-- C++ Version(Proto3): [https://github.com/chai2010/protorpc3-cxx](https://github.com/chai2010/protorpc3-cxx)
+- C++ Version(Proto2): [https://github.com/cgrates/protobufc.cxx](https://github.com/cgrates/protobufc.cxx)
+- C++ Version(Proto3): [https://github.com/cgrates/protobufc3-cxx](https://github.com/cgrates/protobufc3-cxx)
 - Talks: [Go/C++语言Protobuf-RPC简介](http://go-talks.appspot.com/github.com/chai2010/talks/chai2010-protorpc-intro.slide)
 
 # Install
 
 Install `protorpc` package:
 
-1. `go get github.com/chai2010/protorpc`
+1. `go get github.com/cgrates/protobufc`
 1. `go run hello.go`
 
 Install `protoc-gen-go` plugin:
 
 1. install `protoc` at first: http://github.com/google/protobuf/releases
 1. `go get github.com/golang/protobuf/protoc-gen-go`
-1. `go get github.com/chai2010/protorpc/protoc-gen-protorpc`
-1. `go generate github.com/chai2010/protorpc/examples/service.pb`
-1. `go test github.com/chai2010/protorpc/examples/service.pb`
+1. `go get github.com/cgrates/protobufc/protoc-gen-protorpc`
+1. `go generate github.com/cgrates/protobufc/examples/service.pb`
+1. `go test github.com/cgrates/protobufc/examples/service.pb`
 
 
 # Examples
@@ -71,8 +71,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/chai2010/protorpc"
-	service "github.com/chai2010/protorpc/examples/service.pb"
+	"github.com/cgrates/protobufc"
+	service "github.com/cgrates/protobufc/examples/service.pb"
 )
 
 type Echo int

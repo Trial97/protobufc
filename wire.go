@@ -9,7 +9,7 @@ import (
 	"hash/crc32"
 	"io"
 
-	wire "github.com/chai2010/protorpc/wire.pb"
+	wire "github.com/cgrates/protobufc/wire.pb"
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/snappy"
 )
