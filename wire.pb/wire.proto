@@ -13,19 +13,19 @@ syntax = "proto3";
 //
 //	1. Client Send Request
 //	Send RequestHeader: sendFrame(zsock, hdr, len(hdr))
-//	Send Request: sendFrame(zsock, body, hdr.snappy_compressed_request_len)
+//	Send Request: sendFrame(zsock, body)
 //
 //	2. Server Recv Request
 //	Recv RequestHeader: recvFrame(zsock, hdr, max_hdr_len, 0)
-//	Recv Request: recvFrame(zsock, body, hdr.snappy_compressed_request_len, 0)
+//	Recv Request: recvFrame(zsock, body, 0)
 //
 //	3. Server Send Response
 //	Send ResponseHeader: sendFrame(zsock, hdr, len(hdr))
-//	Send Response: sendFrame(zsock, body, hdr.snappy_compressed_response_len)
+//	Send Response: sendFrame(zsock, body)
 //
 //	4. Client Recv Response
 //	Recv ResponseHeader: recvFrame(zsock, hdr, max_hdr_len, 0)
-//	Recv Response: recvFrame(zsock, body, hdr.snappy_compressed_response_len, 0)
+//	Recv Response: recvFrame(zsock, body, 0)
 //
 package protobufc.wire;
 
