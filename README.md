@@ -1,20 +1,9 @@
-# protorpc
+# protobufc
 
-```
-██████╗ ██████╗  ██████╗ ████████╗ ██████╗       ██████╗ ██████╗  ██████╗
-██╔══██╗██╔══██╗██╔═══██╗╚══██╔══╝██╔═══██╗      ██╔══██╗██╔══██╗██╔════╝
-██████╔╝██████╔╝██║   ██║   ██║   ██║   ██║█████╗██████╔╝██████╔╝██║
-██╔═══╝ ██╔══██╗██║   ██║   ██║   ██║   ██║╚════╝██╔══██╗██╔═══╝ ██║
-██║     ██║  ██║╚██████╔╝   ██║   ╚██████╔╝      ██║  ██║██║     ╚██████╗
-╚═╝     ╚═╝  ╚═╝ ╚═════╝    ╚═╝    ╚═════╝       ╚═╝  ╚═╝╚═╝      ╚═════╝
-```
-
-[![Build Status](https://travis-ci.org/chai2010/protorpc.svg)](https://travis-ci.org/chai2010/protorpc)
+[![Build Status](https://travis-ci.org/cgrates/protobufc.svg)](https://travis-ci.org/cgrates/protobufc)
 [![GoDoc](https://godoc.org/github.com/cgrates/protobufc?status.svg)](https://godoc.org/github.com/cgrates/protobufc)
 
-- C++ Version(Proto2): [https://github.com/cgrates/protobufc.cxx](https://github.com/cgrates/protobufc.cxx)
-- C++ Version(Proto3): [https://github.com/cgrates/protobufc3-cxx](https://github.com/cgrates/protobufc3-cxx)
-- Talks: [Go/C++语言Protobuf-RPC简介](http://go-talks.appspot.com/github.com/chai2010/talks/chai2010-protorpc-intro.slide)
+
 
 # Install
 
