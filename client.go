@@ -13,7 +13,7 @@ import (
 	"time"
 
 	wire "github.com/cgrates/protobufc/wire.pb"
-	"github.com/golang/protobuf/proto"
+	"github.com/gogo/protobuf/proto"
 )
 
 type clientCodec struct {
@@ -57,52 +57,45 @@ func (c *clientCodec) WriteRequest(r *rpc.Request, param interface{}) error {
 			)
 		}
 	}
-	err := writeRequest(c.w, r.Seq, r.ServiceMethod, request)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return writeRequest(c.w, r.Seq, r.ServiceMethod, request)
 }
 
-func (c *clientCodec) ReadResponseHeader(r *rpc.Response) error {
+func (c *clientCodec) ReadResponseHeader(r *rpc.Response) (err error) {
 	header := wire.ResponseHeader{}
-	err := readResponseHeader(c.r, &header)
-	if err != nil {
-		return err
+	if err = readResponseHeader(c.r, &header); err != nil {
+		return
 	}
 
-	c.mutex.Lock()
 	r.Seq = header.Id
 	r.Error = header.Error
+
+	c.mutex.Lock()
 	r.ServiceMethod = c.pending[r.Seq]
 	delete(c.pending, r.Seq)
 	c.mutex.Unlock()
 
 	c.respHeader = header
-	return nil
+	return
 }
 
-func (c *clientCodec) ReadResponseBody(x interface{}) error {
-	var response proto.Message
-	if x != nil {
-		var ok bool
-		response, ok = x.(proto.Message)
-		if !ok {
-			return fmt.Errorf(
-				"protorpc.ClientCodec.ReadResponseBody: %T does not implement proto.Message",
-				x,
-			)
-		}
+func (c *clientCodec) ReadResponseBody(x interface{}) (err error) {
+	if x == nil {
+		return
+	}
+	response, ok := x.(proto.Message)
+	if !ok {
+		return fmt.Errorf(
+			"protorpc.ClientCodec.ReadResponseBody: %T does not implement proto.Message",
+			x,
+		)
 	}
 
-	err := readResponseBody(c.r, &c.respHeader, response)
-	if err != nil {
-		return nil
+	if err = readResponseBody(c.r, &c.respHeader, response); err != nil {
+		return
 	}
 
 	c.respHeader = wire.ResponseHeader{}
-	return nil
+	return
 }
 
 // Close closes the underlying connection.

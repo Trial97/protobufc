@@ -28,10 +28,7 @@ func sendFrame(w io.Writer, data []byte) (err error) {
 	if err = write(w, size[:n], false); err != nil {
 		return
 	}
-	if err = write(w, data, false); err != nil {
-		return
-	}
-	return
+	return write(w, data, false)
 }
 
 func recvFrame(r io.Reader) (data []byte, err error) {
@@ -39,13 +36,14 @@ func recvFrame(r io.Reader) (data []byte, err error) {
 	if err != nil {
 		return nil, err
 	}
-	if size != 0 {
-		data = make([]byte, size)
-		if err = read(r, data); err != nil {
-			return nil, err
-		}
+	if size == 0 {
+		return
 	}
-	return data, nil
+	data = make([]byte, size)
+	if err = read(r, data); err != nil {
+		return nil, err
+	}
+	return
 }
 
 // ReadUvarint reads an encoded unsigned integer from r and returns it as a uint64.
@@ -69,42 +67,40 @@ func readUvarint(r io.Reader) (uint64, error) {
 	}
 }
 
-func write(w io.Writer, data []byte, onePacket bool) error {
+func write(w io.Writer, data []byte, onePacket bool) (err error) {
 	if onePacket {
-		if _, err := w.Write(data); err != nil {
-			return err
-		}
-		return nil
+		_, err = w.Write(data)
+		return
 	}
 	for index := 0; index < len(data); {
-		n, err := w.Write(data[index:])
-		if err != nil {
+		var n int
+		if n, err = w.Write(data[index:]); err != nil {
 			if nerr, ok := err.(net.Error); !ok || !nerr.Temporary() {
-				return err
+				return
 			}
 		}
 		index += n
 	}
-	return nil
+	return
 }
 
-func read(r io.Reader, data []byte) error {
+func read(r io.Reader, data []byte) (err error) {
 	for index := 0; index < len(data); {
-		n, err := r.Read(data[index:])
-		if err != nil {
+		var n int
+		if n, err = r.Read(data[index:]); err != nil {
 			if nerr, ok := err.(net.Error); !ok || !nerr.Temporary() {
-				return err
+				return
 			}
 		}
 		index += n
 	}
-	return nil
+	return
 }
 
 func readByte(r io.Reader) (c byte, err error) {
 	data := make([]byte, 1)
 	if err = read(r, data); err != nil {
-		return 0, err
+		return
 	}
 	c = data[0]
 	return

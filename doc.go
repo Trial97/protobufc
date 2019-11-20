@@ -53,7 +53,7 @@ The server calls (for TCP service):
 	import (
 		"errors"
 
-		"github.com/golang/protobuf/proto"
+		"github.com/gogo/protobuf/proto"
 
 		"./arith.pb"
 	)

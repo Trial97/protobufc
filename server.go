@@ -12,7 +12,7 @@ import (
 	"sync"
 
 	wire "github.com/cgrates/protobufc/wire.pb"
-	"github.com/golang/protobuf/proto"
+	"github.com/gogo/protobuf/proto"
 )
 
 type serverCodec struct {
@@ -44,27 +44,26 @@ func NewServerCodec(conn io.ReadWriteCloser) rpc.ServerCodec {
 	}
 }
 
-func (c *serverCodec) ReadRequestHeader(r *rpc.Request) error {
+func (s *serverCodec) ReadRequestHeader(r *rpc.Request) (err error) {
 	header := wire.RequestHeader{}
-	err := readRequestHeader(c.r, &header)
-	if err != nil {
-		return err
+	if err = readRequestHeader(s.r, &header); err != nil {
+		return
 	}
 
-	c.mutex.Lock()
-	c.seq++
-	c.pending[c.seq] = header.Id
+	s.mutex.Lock()
+	s.seq++
+	s.pending[s.seq] = header.Id
+	s.mutex.Unlock()
 	r.ServiceMethod = header.Method
-	r.Seq = c.seq
-	c.mutex.Unlock()
+	r.Seq = s.seq
 
-	c.reqHeader = header
-	return nil
+	s.reqHeader = header
+	return
 }
 
-func (c *serverCodec) ReadRequestBody(x interface{}) error {
+func (s *serverCodec) ReadRequestBody(x interface{}) (err error) {
 	if x == nil {
-		return nil
+		return
 	}
 	request, ok := x.(proto.Message)
 	if !ok {
@@ -74,29 +73,23 @@ func (c *serverCodec) ReadRequestBody(x interface{}) error {
 		)
 	}
 
-	err := readRequestBody(c.r, &c.reqHeader, request)
-	if err != nil {
-		return nil
+	if err = readRequestBody(s.r, &s.reqHeader, request); err != nil {
+		return
 	}
 
-	c.reqHeader = wire.RequestHeader{}
-	return nil
+	s.reqHeader = wire.RequestHeader{}
+	return
 }
 
-// A value sent as a placeholder for the server's response value when the server
-// receives an invalid request. It is never decoded by the client since the Response
-// contains an error when it is used.
-var invalidRequest = struct{}{}
-
-func (c *serverCodec) WriteResponse(r *rpc.Response, x interface{}) error {
+func (s *serverCodec) WriteResponse(r *rpc.Response, x interface{}) error {
 	var response proto.Message
 	if x != nil {
 		var ok bool
 		if response, ok = x.(proto.Message); !ok {
 			if _, ok = x.(struct{}); !ok {
-				c.mutex.Lock()
-				delete(c.pending, r.Seq)
-				c.mutex.Unlock()
+				s.mutex.Lock()
+				delete(s.pending, r.Seq)
+				s.mutex.Unlock()
 				return fmt.Errorf(
 					"protorpc.ServerCodec.WriteResponse: %T does not implement proto.Message",
 					x,
@@ -105,21 +98,16 @@ func (c *serverCodec) WriteResponse(r *rpc.Response, x interface{}) error {
 		}
 	}
 
-	c.mutex.Lock()
-	id, ok := c.pending[r.Seq]
+	s.mutex.Lock()
+	id, ok := s.pending[r.Seq]
 	if !ok {
-		c.mutex.Unlock()
+		s.mutex.Unlock()
 		return errors.New("protorpc: invalid sequence number in response")
 	}
-	delete(c.pending, r.Seq)
-	c.mutex.Unlock()
+	delete(s.pending, r.Seq)
+	s.mutex.Unlock()
 
-	err := writeResponse(c.w, id, r.Error, response)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return writeResponse(s.w, id, r.Error, response)
 }
 
 func (s *serverCodec) Close() error {
