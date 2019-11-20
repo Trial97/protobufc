@@ -2,10 +2,10 @@
 // source: wire.proto
 
 /*
-Package protorpc_wire is a generated protocol buffer package.
+Package protobufc_wire is a generated protocol buffer package.
 
 
-	protorpc wire format wrapper
+	protobufc wire format wrapper
 
 	0. Frame Format
 	len : uvarint64
@@ -35,7 +35,7 @@ It has these top-level messages:
 	RequestHeader
 	ResponseHeader
 */
-package protorpc_wire
+package protobufc_wire
 
 import proto "github.com/golang/protobuf/proto"
 import fmt "fmt"
@@ -64,7 +64,7 @@ var Const_name = map[int32]string{
 	1024: "MAX_REQUEST_HEADER_LEN",
 }
 var Const_value = map[string]int32{
-	"ZERO": 0,
+	"ZERO":                   0,
 	"MAX_REQUEST_HEADER_LEN": 1024,
 }
 

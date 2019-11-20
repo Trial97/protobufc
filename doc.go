@@ -14,7 +14,6 @@ you must be running version 2.3 or higher.
 Finally run
 
 	go get github.com/cgrates/protobufc
-	go get github.com/cgrates/protobufc/protoc-gen-protorpc
 
 to install the support library and protocol compiler.
 

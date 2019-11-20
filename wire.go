@@ -6,106 +6,68 @@ package protorpc
 
 import (
 	"fmt"
-	"hash/crc32"
 	"io"
 
 	wire "github.com/cgrates/protobufc/wire.pb"
-	"github.com/golang/protobuf/proto"
-	"github.com/golang/snappy"
+	"github.com/gogo/protobuf/proto"
 )
 
-func writeRequest(w io.Writer, id uint64, method string, request proto.Message) error {
+func writeRequest(w io.Writer, id uint64, method string, request proto.Message) (err error) {
 	// marshal request
 	pbRequest := []byte{}
 	if request != nil {
-		var err error
-		pbRequest, err = proto.Marshal(request)
-		if err != nil {
-			return err
+		if pbRequest, err = proto.Marshal(request); err != nil {
+			return
 		}
 	}
 
-	// compress serialized proto data
-	compressedPbRequest := snappy.Encode(nil, pbRequest)
-
 	// generate header
 	header := &wire.RequestHeader{
-		Id:                         id,
-		Method:                     method,
-		RawRequestLen:              uint32(len(pbRequest)),
-		SnappyCompressedRequestLen: uint32(len(compressedPbRequest)),
-		Checksum:                   crc32.ChecksumIEEE(compressedPbRequest),
+		Id:     id,
+		Method: method,
 	}
 
 	// check header size
-	pbHeader, err := proto.Marshal(header)
-	if err != err {
-		return err
+	pbHeader := []byte{}
+	if pbHeader, err = proto.Marshal(header); err != nil {
+		return
 	}
-	if len(pbHeader) > int(wire.Const_MAX_REQUEST_HEADER_LEN) {
-		return fmt.Errorf("protorpc.writeRequest: header larger than max_header_len: %d.", len(pbHeader))
+	if len(pbHeader) > 1024 {
+		return fmt.Errorf("protorpc.writeRequest: header larger than max_header_len: %d", len(pbHeader))
 	}
 
 	// send header (more)
-	if err := sendFrame(w, pbHeader); err != nil {
-		return err
+	if err = sendFrame(w, pbHeader); err != nil {
+		return
 	}
 
 	// send body (end)
-	if err := sendFrame(w, compressedPbRequest); err != nil {
-		return err
-	}
-
-	return nil
+	return sendFrame(w, pbRequest)
 }
 
 func readRequestHeader(r io.Reader, header *wire.RequestHeader) (err error) {
 	// recv header (more)
-	pbHeader, err := recvFrame(r)
-	if err != nil {
-		return err
+	pbHeader := []byte{}
+	if pbHeader, err = recvFrame(r); err != nil {
+		return
 	}
 
 	// Marshal Header
-	err = proto.Unmarshal(pbHeader, header)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return proto.Unmarshal(pbHeader, header)
 }
 
-func readRequestBody(r io.Reader, header *wire.RequestHeader, request proto.Message) error {
+func readRequestBody(r io.Reader, header *wire.RequestHeader, request proto.Message) (err error) {
 	// recv body (end)
-	compressedPbRequest, err := recvFrame(r)
-	if err != nil {
-		return err
-	}
-
-	// checksum
-	if crc32.ChecksumIEEE(compressedPbRequest) != header.Checksum {
-		return fmt.Errorf("protorpc.readRequestBody: unexpected checksum.")
-	}
-
-	// decode the compressed data
-	pbRequest, err := snappy.Decode(nil, compressedPbRequest)
-	if err != nil {
-		return err
-	}
-	// check wire header: rawMsgLen
-	if uint32(len(pbRequest)) != header.RawRequestLen {
-		return fmt.Errorf("protorpc.readRequestBody: Unexcpeted header.RawRequestLen.")
+	pbRequest := []byte{}
+	if pbRequest, err = recvFrame(r); err != nil {
+		return
 	}
 
 	// Unmarshal to proto message
-	if request != nil {
-		err = proto.Unmarshal(pbRequest, request)
-		if err != nil {
-			return err
-		}
+	if request == nil {
+		return
 	}
-
-	return nil
+	return proto.Unmarshal(pbRequest, request)
 }
 
 func writeResponse(w io.Writer, id uint64, serr string, response proto.Message) (err error) {
@@ -117,27 +79,20 @@ func writeResponse(w io.Writer, id uint64, serr string, response proto.Message) 
 	// marshal response
 	pbResponse := []byte{}
 	if response != nil {
-		pbResponse, err = proto.Marshal(response)
-		if err != nil {
-			return err
+		if pbResponse, err = proto.Marshal(response); err != nil {
+			return
 		}
 	}
 
-	// compress serialized proto data
-	compressedPbResponse := snappy.Encode(nil, pbResponse)
-
 	// generate header
 	header := &wire.ResponseHeader{
-		Id:                          id,
-		Error:                       serr,
-		RawResponseLen:              uint32(len(pbResponse)),
-		SnappyCompressedResponseLen: uint32(len(compressedPbResponse)),
-		Checksum:                    crc32.ChecksumIEEE(compressedPbResponse),
+		Id:    id,
+		Error: serr,
 	}
 
 	// check header size
-	pbHeader, err := proto.Marshal(header)
-	if err != err {
+	pbHeader := []byte{}
+	if pbHeader, err = proto.Marshal(header); err != nil {
 		return
 	}
 
@@ -147,7 +102,7 @@ func writeResponse(w io.Writer, id uint64, serr string, response proto.Message) 
 	}
 
 	// send body (end)
-	if err = sendFrame(w, compressedPbResponse); err != nil {
+	if err = sendFrame(w, pbResponse); err != nil {
 		return
 	}
 
@@ -162,43 +117,19 @@ func readResponseHeader(r io.Reader, header *wire.ResponseHeader) error {
 	}
 
 	// Marshal Header
-	err = proto.Unmarshal(pbHeader, header)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return proto.Unmarshal(pbHeader, header)
 }
 
-func readResponseBody(r io.Reader, header *wire.ResponseHeader, response proto.Message) error {
+func readResponseBody(r io.Reader, header *wire.ResponseHeader, response proto.Message) (err error) {
 	// recv body (end)
-	compressedPbResponse, err := recvFrame(r)
-	if err != nil {
-		return err
-	}
-
-	// checksum
-	if crc32.ChecksumIEEE(compressedPbResponse) != header.Checksum {
-		return fmt.Errorf("protorpc.readResponseBody: unexpected checksum.")
-	}
-
-	// decode the compressed data
-	pbResponse, err := snappy.Decode(nil, compressedPbResponse)
-	if err != nil {
-		return err
-	}
-	// check wire header: rawMsgLen
-	if uint32(len(pbResponse)) != header.RawResponseLen {
-		return fmt.Errorf("protorpc.readResponseBody: Unexcpeted header.RawResponseLen.")
+	pbResponse := []byte{}
+	if pbResponse, err = recvFrame(r); err != nil {
+		return
 	}
 
 	// Unmarshal to proto message
-	if response != nil {
-		err = proto.Unmarshal(pbResponse, response)
-		if err != nil {
-			return err
-		}
+	if response == nil {
+		return
 	}
-
-	return nil
+	return proto.Unmarshal(pbResponse, response)
 }
