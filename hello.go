@@ -5,13 +5,13 @@
 // +build ingore
 
 package main
-
+// ToDo: replace example
+/*
 import (
 	"fmt"
 	"log"
 
 	"github.com/cgrates/protobufc"
-	service "github.com/cgrates/protobufc/examples/service.pb"
 )
 
 type Echo int
@@ -60,3 +60,4 @@ func main() {
 	// Output:
 	// 你好, 世界!你好, 世界!
 }
+*/
