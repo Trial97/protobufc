@@ -12,7 +12,7 @@ import (
 	"net"
 	"net/rpc"
 
-	protobufc "github.com/cgrates/protobufc"
+	"github.com/cgrates/protobufc"
 	message "github.com/cgrates/protobufc/examples/message.pb"
 )
 
