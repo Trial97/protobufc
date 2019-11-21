@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package protorpc
+package protobufc
 
 import (
 	"errors"
@@ -68,7 +68,7 @@ func (s *serverCodec) ReadRequestBody(x interface{}) (err error) {
 	request, ok := x.(proto.Message)
 	if !ok {
 		return fmt.Errorf(
-			"protorpc.ServerCodec.ReadRequestBody: %T does not implement proto.Message",
+			"protobufc.ServerCodec.ReadRequestBody: %T does not implement proto.Message",
 			x,
 		)
 	}
@@ -91,7 +91,7 @@ func (s *serverCodec) WriteResponse(r *rpc.Response, x interface{}) error {
 				delete(s.pending, r.Seq)
 				s.mutex.Unlock()
 				return fmt.Errorf(
-					"protorpc.ServerCodec.WriteResponse: %T does not implement proto.Message",
+					"protobufc.ServerCodec.WriteResponse: %T does not implement proto.Message",
 					x,
 				)
 			}
@@ -102,7 +102,7 @@ func (s *serverCodec) WriteResponse(r *rpc.Response, x interface{}) error {
 	id, ok := s.pending[r.Seq]
 	if !ok {
 		s.mutex.Unlock()
-		return errors.New("protorpc: invalid sequence number in response")
+		return errors.New("protobufc: invalid sequence number in response")
 	}
 	delete(s.pending, r.Seq)
 	s.mutex.Unlock()

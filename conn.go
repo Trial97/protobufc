@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package protorpc
+package protobufc
 
 import (
 	"encoding/binary"
@@ -58,7 +58,7 @@ func readUvarint(r io.Reader) (uint64, error) {
 		}
 		if b < 0x80 {
 			if i > 9 || i == 9 && b > 1 {
-				return x, errors.New("protorpc: varint overflows a 64-bit integer")
+				return x, errors.New("protobufc: varint overflows a 64-bit integer")
 			}
 			return x | uint64(b)<<s, nil
 		}

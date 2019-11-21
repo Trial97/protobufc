@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package protorpc_test
+package protobufc_test
 
 import (
 	"errors"
@@ -58,7 +58,7 @@ func TestInternalMessagePkg(t *testing.T) {
 	if err != nil {
 		t.Fatalf(`net.Dial("tcp", "127.0.0.1:1414"): %v`, err)
 	}
-	client := rpc.NewClientWithCodec(protorpc.NewClientCodec(conn))
+	client := rpc.NewClientWithCodec(protobufc.NewClientCodec(conn))
 	defer client.Close()
 
 	testArithClient(t, client)
@@ -87,7 +87,7 @@ func listenAndServeArithAndEchoService(network, addr string) error {
 				log.Printf("clients.Accept(): %v\n", err)
 				continue
 			}
-			go srv.ServeCodec(protorpc.NewServerCodec(conn))
+			go srv.ServeCodec(protobufc.NewServerCodec(conn))
 		}
 	}()
 	return nil

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package protorpc
+package protobufc
 
 import (
 	"fmt"
@@ -52,7 +52,7 @@ func (c *clientCodec) WriteRequest(r *rpc.Request, param interface{}) error {
 		var ok bool
 		if request, ok = param.(proto.Message); !ok {
 			return fmt.Errorf(
-				"protorpc.ClientCodec.WriteRequest: %T does not implement proto.Message",
+				"protobufc.ClientCodec.WriteRequest: %T does not implement proto.Message",
 				param,
 			)
 		}
@@ -85,7 +85,7 @@ func (c *clientCodec) ReadResponseBody(x interface{}) (err error) {
 	response, ok := x.(proto.Message)
 	if !ok {
 		return fmt.Errorf(
-			"protorpc.ClientCodec.ReadResponseBody: %T does not implement proto.Message",
+			"protobufc.ClientCodec.ReadResponseBody: %T does not implement proto.Message",
 			x,
 		)
 	}

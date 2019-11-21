@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package protorpc
+package protobufc
 
 import (
 	"fmt"
@@ -33,7 +33,7 @@ func writeRequest(w io.Writer, id uint64, method string, request proto.Message) 
 		return
 	}
 	if len(pbHeader) > 1024 {
-		return fmt.Errorf("protorpc.writeRequest: header larger than max_header_len: %d", len(pbHeader))
+		return fmt.Errorf("protobufc.writeRequest: header larger than max_header_len: %d", len(pbHeader))
 	}
 
 	// send header (more)
